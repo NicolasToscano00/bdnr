@@ -103,7 +103,6 @@ docker-compose up -d
 ### 2. Usar Backend Node.js 
 
 - Frontend: http://localhost:8080
-- Ya está configurado 
 
 ### 3. Cambiar a Backend .NET
 
