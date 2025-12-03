@@ -5,11 +5,9 @@ const redis = require("redis");
 const app = express();
 const PORT = 5014;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Conectar a Redis
 const redisClient = redis.createClient({
   socket: {
     host: process.env.REDIS_HOST || "localhost",
@@ -20,7 +18,6 @@ const redisClient = redis.createClient({
 redisClient.on("error", (err) => console.error("Redis Error:", err));
 redisClient.on("connect", () => console.log("✅ Conectado a Redis"));
 
-// Inicializar conexión
 (async () => {
   await redisClient.connect();
 })();
@@ -37,7 +34,6 @@ const streamKey = (userId) => `notifications:stream:${userId}`;
 // ENDPOINTS
 // ============================================
 
-// 📨 Crear Notificación
 app.post("/Notifications", async (req, res) => {
   try {
     const {
@@ -48,14 +44,12 @@ app.post("/Notifications", async (req, res) => {
       ttlSeconds = 3600,
     } = req.body;
 
-    // Validación básica
     if (!userId || !title || !message) {
       return res.status(400).json({
         error: "userId, title y message son requeridos",
       });
     }
 
-    // Generar ID único
     const id = generateId();
     const timestamp = new Date().toISOString();
 
@@ -68,20 +62,17 @@ app.post("/Notifications", async (req, res) => {
       timestamp,
     };
 
-    // 1. Guardar notificación con TTL
     await redisClient.setEx(
       notificationKey(id),
       ttlSeconds,
       JSON.stringify(notification)
     );
 
-    // 2. Agregar al Sorted Set por prioridad
     await redisClient.zAdd(priorityKey(userId), {
       score: priority,
       value: id,
     });
 
-    // 3. Agregar al Stream (historial)
     await redisClient.xAdd(streamKey(userId), "*", {
       id: notification.id,
       userId: notification.userId.toString(),
@@ -99,23 +90,19 @@ app.post("/Notifications", async (req, res) => {
   }
 });
 
-// 📬 Obtener notificaciones activas de un usuario
 app.get("/Notifications/:userId", async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
     const notifications = [];
 
-    // Obtener todos los IDs del Sorted Set (ordenados por prioridad)
     const ids = await redisClient.zRange(priorityKey(userId), 0, -1);
 
-    // Obtener cada notificación
     for (const id of ids) {
       const data = await redisClient.get(notificationKey(id));
 
       if (data) {
         notifications.push(JSON.parse(data));
       } else {
-        // Si la notificación expiró, limpiar del Sorted Set
         await redisClient.zRem(priorityKey(userId), id);
       }
     }
@@ -130,12 +117,10 @@ app.get("/Notifications/:userId", async (req, res) => {
   }
 });
 
-// 📜 Obtener historial (Stream) de un usuario
 app.get("/Notifications/stream/:userId", async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
 
-    // Obtener todas las entradas del Stream
     const entries = await redisClient.xRange(streamKey(userId), "-", "+");
 
     const stream = entries.map((entry) => ({
@@ -153,12 +138,11 @@ app.get("/Notifications/stream/:userId", async (req, res) => {
   }
 });
 
-// 🗑️ Limpiar toda la base de datos
 app.delete("/Notifications/flush", async (req, res) => {
   try {
     await redisClient.flushDb();
     res.json({ message: "Redis limpiado" });
-    console.log("🗑️ Base de datos limpiada");
+    console.log("🗑️ Redis limpiado");
   } catch (error) {
     console.error("Error limpiando Redis:", error);
     res.status(500).json({ error: error.message });

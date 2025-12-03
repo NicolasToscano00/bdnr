@@ -1,5 +1,4 @@
 services:
-  # Redis Database
   redis:
     image: redis:7-alpine
     container_name: redis-notifications
@@ -16,7 +15,6 @@ services:
     networks:
       - notifications-network
 
-  # Backend API
   backend:
     build:
       context: ./backend-node
@@ -35,7 +33,6 @@ services:
       - notifications-network
     restart: unless-stopped
 
-  # Frontend (Nginx)
   frontend:
     image: nginx:alpine
     container_name: frontend-notifications

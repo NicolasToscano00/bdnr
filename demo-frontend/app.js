@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadNotifications();
   updateFormByType(); 
 
-  // // Auto-refresh cada 3 segundos
+  // // Auto-refresh cada X segundos
   // setInterval(() => {
   //   loadNotifications();
   // }, 3000);
