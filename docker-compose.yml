@@ -1,0 +1,59 @@
+services:
+  # Redis Database
+  redis:
+    image: redis:7-alpine
+    container_name: redis-notifications
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - notifications-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend-node
+      dockerfile: Dockerfile
+    container_name: backend-notifications
+    ports:
+      - "5014:5014"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NODE_ENV=development
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - notifications-network
+    restart: unless-stopped
+
+  # Frontend (Nginx)
+  frontend:
+    image: nginx:alpine
+    container_name: frontend-notifications
+    ports:
+      - "8080:80"
+    volumes:
+      - ./demo-frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - notifications-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  notifications-network:
+    driver: bridge
