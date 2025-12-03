@@ -1,3 +1,6 @@
+// Configuración del Backend
+// Node.js: http://localhost:5014/Notifications
+// .NET:    http://localhost:5015/Notifications
 const API_URL = "http://localhost:5014/Notifications";
 
 const PRESETS = {
@@ -41,7 +44,7 @@ const PRESETS = {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadNotifications();
-  updateFormByType(); 
+  updateFormByType();
 
   // // Auto-refresh cada X segundos
   // setInterval(() => {
