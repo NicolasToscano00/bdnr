@@ -58,7 +58,6 @@ Entries: Log inmutable cronológico
 
 - **Frontend**: http://localhost:8080
 - **Backend Node.js**: http://localhost:5014
-- **Backend .NET**: http://localhost:5015
 - **Redis**: localhost:6379
 
 ---
@@ -74,15 +73,6 @@ bdnr/
 │   ├── server.js              
 │   ├── package.json
 │   └── Dockerfile
-│
-├── redis/WebApplication1/      # Backend .NET
-│   └── WebApplication1/
-│       ├── Controllers/
-│       ├── Services/
-│       ├── Models/
-│       ├── Redis/
-│       ├── Program.cs
-│       └── Dockerfile
 │
 └── demo-frontend/              # Frontend
     ├── index.html
@@ -104,14 +94,7 @@ docker-compose up -d
 
 - Frontend: http://localhost:8080
 
-### 3. Cambiar a Backend .NET
-
-```javascript
-// demo-frontend/app.js línea 3
-const API_URL = "http://localhost:5015/Notifications";
-```
-
-### 4. Recargar navegador
+### 3. Recargar navegador
 
 ```
 Cmd + Shift + R  (Mac)
