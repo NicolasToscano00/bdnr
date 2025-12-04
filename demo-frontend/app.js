@@ -1,10 +1,7 @@
-// Configuración del Backend
-// Node.js: http://localhost:5014/Notifications
-// .NET:    http://localhost:5015/Notifications
 const API_URL = "http://localhost:5014/Notifications";
 
-const AUTO_REFRESH_ENABLED = false; 
-const AUTO_REFRESH_INTERVAL = 3000; 
+const AUTO_REFRESH_ENABLED = false;
+const AUTO_REFRESH_INTERVAL = 3000;
 
 const PRESETS = {
   streak: {
