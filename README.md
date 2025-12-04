@@ -77,7 +77,7 @@ bdnr/
 └── demo-frontend/              # Frontend
     ├── index.html
     ├── styles.css
-    └── app.js                  # Cambiar API_URL aquí
+    └── app.js                  #API_URL aquí
 ```
 
 ---
